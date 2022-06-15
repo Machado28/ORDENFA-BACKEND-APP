@@ -1,5 +1,6 @@
 import { Request, Response, Router } from 'express';
 import multer from 'multer';
+import { UsuarioController } from './app/controllers';
 import { multerconfig } from './config/multer';
 
 const routes = Router();
@@ -9,5 +10,6 @@ routes.get('/', (req: Request, res: Response) => {
 
 const upload = multer(multerconfig);
 
- 
+routes.post('/usuario', UsuarioController.store);
+routes.get('/usuarios', UsuarioController.index);
 export default routes;
