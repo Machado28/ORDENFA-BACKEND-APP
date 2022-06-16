@@ -10,7 +10,8 @@ import { statusCode } from '../util/statusCode';
 class ContactoController {
    async store (req: Request, res: Response, next: NextFunction) {
       const schema = Yup.object().shape({
-         contacto: Yup.array()
+         descricao: Yup.string().required(),
+         tipoId:Yup.string().required(),
          
 
       });
@@ -19,13 +20,13 @@ class ContactoController {
       }
 
       try {
-         const descricao= await req.body.contacto[0].descricao;
-         const tipo= await req.body.contacto[0].tipo;
-         const id=tipo?.id
+         const{ descricao,tipoId}=req.body
+         
+        
          const tipoDeContactoRepository = getCustomRepository(TipoDeContactoRepository);
          const contactoRepository = getCustomRepository(ContactoRepository);
         
-         const tipoDeContactoExist = await tipoDeContactoRepository.findOne( id );
+         const tipoDeContactoExist = await tipoDeContactoRepository.findOne( tipoId );
          const contactoExist = await contactoRepository.findOne({ descricao });
 
           if (contactoExist) {
@@ -34,7 +35,7 @@ class ContactoController {
          if (!tipoDeContactoExist) {
             return res.status(statusCode.naoEncontrado).json({mensagem:'tipo de contacto não encontrado'});
          }
-console.log(tipo)
+ 
          const contacto = contactoRepository.create({
             descricao,
             tipo:tipoDeContactoExist
