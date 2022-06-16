@@ -36,6 +36,20 @@ abstract class TabelaDefault extends DataDefault {
   descricao: string;
 }
 
+abstract class TokenDefault extends DataDefault {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  token: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  expiracao: string;
+  
+  @Column({ type: 'varchar', nullable: true })
+  usuario: string;
+}
+
 class DataValidadeDefault {
   @Column()
   inicio: Date;
@@ -44,6 +58,7 @@ class DataValidadeDefault {
   fim: Date;
 }
 export {
+  TokenDefault,
   DataDefault,
   UsuarioDefault,
   TabelaDefault,
