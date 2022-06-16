@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import multer from 'multer';
-import { ContactoController, LoginController, RecuperarSenhaController, SessionController, TipoDeContactoController, UsuarioController } from './app/controllers';
+import { ContactoController, CursoController, LoginController, RecuperarSenhaController, SessionController, TipoDeContactoController, UsuarioController } from './app/controllers';
 import { multerconfig } from './config/multer';
 
 const routes = Router();
@@ -27,6 +27,11 @@ routes.post('/session',SessionController.store);
 
 routes.get('/login',LoginController.index);
 routes.post('/login',LoginController.store);
+
+routes.post('/curso',CursoController.store);
+routes.get('/curso',CursoController.index);
+routes.delete('/curso/:id',CursoController.delete);
+routes.put('/curso/:id',CursoController.update);
 
 routes.post('/solicitarRecuperacao',RecuperarSenhaController.send);
 routes.post('/resetPassword/',RecuperarSenhaController.receive);
