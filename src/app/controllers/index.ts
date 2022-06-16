@@ -3,5 +3,6 @@ import TipoDeContactoController from "./TipoDeContactoController";
 import ContactoController from "./ContactoController";
 import LoginController from "./LoginController";
 import SessionController from "./SessionController";
+import RecuperarSenhaController from "./RecuperarSenhaController";
 
-export {UsuarioController, SessionController,TipoDeContactoController,ContactoController,LoginController}
+export {UsuarioController,RecuperarSenhaController, SessionController,TipoDeContactoController,ContactoController,LoginController}
