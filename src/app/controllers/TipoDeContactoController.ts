@@ -81,5 +81,25 @@ class TipoDeContactoController {
       }
    }
 
+   async delete (req: Request, res: Response) {
+      try {
+         const { id } = req.params;
+
+         const tipoDeContactoRepository = getCustomRepository(TipoDeContactoRepository);
+         const usuarioExiste = await tipoDeContactoRepository.findOne({ id });
+
+         if (!usuarioExiste) {
+            return res.status(statusCode.naoEncontrado).json(Resposta(statusCode.naoEncontrado));
+         }
+
+         const user = await tipoDeContactoRepository.delete({ id });
+         return res.status(statusCode.ok).json(Resposta(statusCode.ok));
+      
+      } catch (err) {
+        console.log(err)
+         return res.status(statusCode.erroInterno).json(Resposta(statusCode.erroInterno));
+      }
+   }
+
 }
 export default new TipoDeContactoController();

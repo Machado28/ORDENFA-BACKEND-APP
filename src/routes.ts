@@ -16,4 +16,5 @@ routes.get('/usuarios', UsuarioController.index);
 routes.post('/tipodecontacto', TipoDeContactoController.store);
 routes.get('/tipodecontacto', TipoDeContactoController.index);
 routes.put('/tipodecontacto/:id', TipoDeContactoController.update);
+routes.delete('/tipodecontacto/:id', TipoDeContactoController.delete);
 export default routes;
