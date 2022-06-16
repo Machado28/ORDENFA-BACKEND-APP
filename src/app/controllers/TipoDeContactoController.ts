@@ -51,5 +51,35 @@ class TipoDeContactoController {
          return res.status(statusCode.erroInterno).json(Resposta(statusCode.erroInterno));
       }
    }
+
+
+   async update (req: Request, res: Response) {
+      const schema = Yup.object().shape({
+         nome:Yup.string(),
+         descricao:Yup.string(),
+      });
+
+      if (!(await schema.isValid(req.body))) {
+         return res.status(statusCode.erroInterno).json(Resposta(statusCode.erroInterno));
+      }
+
+      try {
+         const { id } = req.params;
+         const { nome,descricao} = req.body;
+
+         const tipoDeContactoRepository = getCustomRepository(TipoDeContactoRepository);
+
+         const tipoDeContactoExist= await tipoDeContactoRepository.findOne({id});
+         if(!tipoDeContactoExist){
+            return res.status(statusCode.naoEncontrado).json(Resposta(statusCode.naoEncontrado))
+         }
+         await tipoDeContactoRepository.update({ id }, {nome,descricao});
+         return res.status(statusCode.ok).json(Resposta(statusCode.ok))
+      } catch (err) {
+         console.log(err)
+         return res.status(statusCode.erroInterno).json(Resposta(statusCode.erroInterno));
+      }
+   }
+
 }
 export default new TipoDeContactoController();

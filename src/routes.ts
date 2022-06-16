@@ -15,4 +15,5 @@ routes.get('/usuarios', UsuarioController.index);
 
 routes.post('/tipodecontacto', TipoDeContactoController.store);
 routes.get('/tipodecontacto', TipoDeContactoController.index);
+routes.put('/tipodecontacto/:id', TipoDeContactoController.update);
 export default routes;
