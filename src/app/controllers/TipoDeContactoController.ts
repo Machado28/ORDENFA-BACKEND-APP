@@ -37,6 +37,19 @@ class TipoDeContactoController {
       } catch (err) {
          return res.status(statusCode.criado).json(Resposta(statusCode.criado));
       }
+   };
+
+   async index (req: Request, res: Response) {
+      try {
+         const tipoDeContactoRepository = getCustomRepository(TipoDeContactoRepository);
+
+         const tipoDeContactos= await tipoDeContactoRepository.find();
+
+         return res.status(statusCode.ok).json(tipoDeContactos);
+      } catch (error) {
+         console.log(error);
+         return res.status(statusCode.erroInterno).json(Resposta(statusCode.erroInterno));
+      }
    }
 }
 export default new TipoDeContactoController();
