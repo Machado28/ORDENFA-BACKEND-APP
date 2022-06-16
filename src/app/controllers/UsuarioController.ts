@@ -36,7 +36,7 @@ class UsuarioController {
             numeroDeIdentificacao
          });
          await usuarioRepository.save(usuario);
-
+         
          return res.status(201).json(Resposta(201));
       } catch (err) {
          return res.status(statusCode.criado).json(Resposta(statusCode.criado));

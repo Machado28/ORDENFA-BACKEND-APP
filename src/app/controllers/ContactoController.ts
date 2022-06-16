@@ -1,51 +1,69 @@
 import { Request, Response, NextFunction } from 'express';
 import { getCustomRepository } from 'typeorm';
 import * as Yup from 'yup';
+import { ContactoRepository } from '../../repositories/ContactoRepository';
 import { TipoDeContactoRepository } from '../../repositories/TipoDeContactoRepository';
+import { UsuarioRepository } from '../../repositories/UsuarioRepository';
 import Resposta from '../util/message';
 import Res from '../util/message';
 import { statusCode } from '../util/statusCode';
 
-class TipoDeContactoController {
+class ContactoController {
    async store (req: Request, res: Response, next: NextFunction) {
       const schema = Yup.object().shape({
-         descricao: Yup.string(),
-         nome: Yup.string().required()
+         descricao: Yup.string().required(),
+         tipoId:Yup.string().required(),
+         usuarioId:Yup.string().required(),
+         
+
       });
       if (!(await schema.isValid(req.body))) {
          return res.status(statusCode.erroExterno).json(Resposta(statusCode.erroExterno));
       }
 
       try {
-         const { descricao, nome } = await req.body;
+         const{ descricao,tipoId,usuarioId}=await req.body
+         
+        
          const tipoDeContactoRepository = getCustomRepository(TipoDeContactoRepository);
+         const contactoRepository = getCustomRepository(ContactoRepository);
+         const usuarioRepository = getCustomRepository(UsuarioRepository);
+       
+         const tipoDeContactoExist = await tipoDeContactoRepository.findOne( tipoId );
+         const contactoExist = await contactoRepository.findOne({ descricao });
+         const usuarioExist = await usuarioRepository.findOne({where:{id:usuarioId} });
 
-         const tipoDeContactoExist = await tipoDeContactoRepository.findOne({ nome });
-
-         if (tipoDeContactoExist) {
-            return res.status(statusCode.proibido).json(Resposta(statusCode.proibido));
+          if (contactoExist) {
+            return res.status(statusCode.proibido).json({mensagem:'contacto já existe!'});
          }
-
-         const tipoDeContacto = tipoDeContactoRepository.create({
-           nome,
-            descricao
+         if (!tipoDeContactoExist) {
+            return res.status(statusCode.naoEncontrado).json({mensagem:'tipo de contacto não encontrado'});
+         }
+         if (!usuarioExist) {
+            return res.status(statusCode.naoEncontrado).json({mensagem:'usuário não encontrado'});
+         }
+ 
+         const contacto = contactoRepository.create({
+            descricao,
+            tipo:tipoDeContactoExist,
+            usuarioId:usuarioExist
          });
+          
+         await contactoRepository.save(contacto);
 
-         await tipoDeContactoRepository.save(tipoDeContacto);
-
-         return res.status(201).json(Resposta(201));
-      } catch (err) {
          return res.status(statusCode.criado).json(Resposta(statusCode.criado));
+      } catch (err) {
+         return res.status(statusCode.erroInterno).json(Resposta(statusCode.erroInterno));
       }
    };
 
    async index (req: Request, res: Response) {
       try {
-         const tipoDeContactoRepository = getCustomRepository(TipoDeContactoRepository);
+         const contactoRepository = getCustomRepository(ContactoRepository);
 
-         const tipoDeContactos= await tipoDeContactoRepository.find();
+         const contactos= await contactoRepository.find();
 
-         return res.status(statusCode.ok).json(tipoDeContactos);
+         return res.status(statusCode.ok).json(contactos);
       } catch (error) {
          console.log(error);
          return res.status(statusCode.erroInterno).json(Resposta(statusCode.erroInterno));
@@ -102,4 +120,4 @@ class TipoDeContactoController {
    }
 
 }
-export default new TipoDeContactoController();
+export default new ContactoController();

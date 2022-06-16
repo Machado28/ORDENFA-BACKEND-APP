@@ -1,5 +1,5 @@
 export default {
-  key: 'dlinecode-gestao-escolar',
+  key: 'ordenfa-app-backend',
   expiresIn: '3d',
   expiresIn2: '5d',
 };
