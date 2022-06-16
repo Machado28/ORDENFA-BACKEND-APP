@@ -10,8 +10,8 @@ import { statusCode } from '../util/statusCode';
 class ContactoController {
    async store (req: Request, res: Response, next: NextFunction) {
       const schema = Yup.object().shape({
-         descricao: Yup.string().required(),
-         nome: Yup.string(),
+         contacto: Yup.array()
+         
 
       });
       if (!(await schema.isValid(req.body))) {
@@ -19,42 +19,42 @@ class ContactoController {
       }
 
       try {
-         const { descricao,tipo:{id} } = await req.body;
-
+         const descricao= await req.body.contacto[0].descricao;
+         const tipo= await req.body.contacto[0].tipo;
+         const id=tipo?.id
          const tipoDeContactoRepository = getCustomRepository(TipoDeContactoRepository);
          const contactoRepository = getCustomRepository(ContactoRepository);
         
-         const tipoDeContactoExist = await tipoDeContactoRepository.findOne({ id });
+         const tipoDeContactoExist = await tipoDeContactoRepository.findOne( id );
          const contactoExist = await contactoRepository.findOne({ descricao });
 
-         
-
           if (contactoExist) {
-            return res.status(statusCode.proibido).json(Resposta(statusCode.proibido));
+            return res.status(statusCode.proibido).json({mensagem:'contacto já existe!'});
          }
          if (!tipoDeContactoExist) {
-            return res.status(statusCode.proibido).json(Resposta(statusCode.proibido));
+            return res.status(statusCode.naoEncontrado).json({mensagem:'tipo de contacto não encontrado'});
          }
-
-         const tipoDeContacto = tipoDeContactoRepository.create({
-            descricao
+console.log(tipo)
+         const contacto = contactoRepository.create({
+            descricao,
+            tipo:tipoDeContactoExist
          });
+          
+         await contactoRepository.save(contacto);
 
-         await tipoDeContactoRepository.save(tipoDeContacto);
-
-         return res.status(201).json(Resposta(201));
-      } catch (err) {
          return res.status(statusCode.criado).json(Resposta(statusCode.criado));
+      } catch (err) {
+         return res.status(statusCode.erroInterno).json(Resposta(statusCode.erroInterno));
       }
    };
 
    async index (req: Request, res: Response) {
       try {
-         const tipoDeContactoRepository = getCustomRepository(TipoDeContactoRepository);
+         const contactoRepository = getCustomRepository(ContactoRepository);
 
-         const tipoDeContactos= await tipoDeContactoRepository.find();
+         const contactos= await contactoRepository.find();
 
-         return res.status(statusCode.ok).json(tipoDeContactos);
+         return res.status(statusCode.ok).json(contactos);
       } catch (error) {
          console.log(error);
          return res.status(statusCode.erroInterno).json(Resposta(statusCode.erroInterno));
