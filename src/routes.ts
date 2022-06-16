@@ -29,4 +29,5 @@ routes.get('/login',LoginController.index);
 routes.post('/login',LoginController.store);
 
 routes.post('/solicitarRecuperacao',RecuperarSenhaController.send);
+routes.post('/resetPassword/',RecuperarSenhaController.receive);
 export default routes;

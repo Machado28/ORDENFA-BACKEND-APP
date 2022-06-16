@@ -12,6 +12,7 @@ import { ContactoRepository } from '../../repositories/ContactoRepository';
 import { TokenRepository } from '../../repositories/TokenRepository';
 import { statusCode } from '../util/statusCode';
 import Resposta from '../util/message';
+import LoginRepository from '../../repositories/LoginRepository';
 
 class RecuperarSenhaController {
    async send (req: Request, res: Response) {
@@ -22,17 +23,16 @@ class RecuperarSenhaController {
          return res.status(400).json('error validator!');
       }
       try {
-         
          const tokenRepository = getCustomRepository(TokenRepository);
 
          const contactoRepository = getCustomRepository(ContactoRepository);
          const { email } = req.body;
 
-         const existeEmail = await contactoRepository.findOne({ where: { descricao: email,} });
-          
-         if (!existeEmail){
-            return res.status(statusCode.naoEncontrado).json({mensagem:"Email não Encontrado!"})
-          }
+         const existeEmail = await contactoRepository.findOne({ where: { descricao: email } });
+
+         if (!existeEmail) {
+            return res.status(statusCode.naoEncontrado).json({ mensagem: 'Email não Encontrado!' });
+         }
 
          const token = jwt.sign({ recuperacao: { ownerId: existeEmail.usuarioId.id } }, authDataSolicitacao.key, {
             expiresIn: authDataSolicitacao.expiresIn2
@@ -46,11 +46,11 @@ class RecuperarSenhaController {
 
          const url = `${process.env.LINK_APP_FRONT}/recuperarSenha/token=${token}&id=${existeEmail.usuarioId.id}`;
          const result = await tokenRepository.save(solicitacao);
-         const solicitacaoEscolaId = await tokenRepository.findOne({
+         const solicitacaoDt = await tokenRepository.findOne({
             where: { token }
          });
-         console.log(solicitacaoEscolaId.id);
-         const usuario= existeEmail.usuarioId.nome
+         console.log(solicitacaoDt);
+         const usuario = existeEmail.usuarioId.nome;
          await Mail.sendMail({
             from: 'ORDENFA <ulundoantonio@gmail.com>',
             to: `${usuario} <${email}>`,
@@ -65,15 +65,41 @@ class RecuperarSenhaController {
          return res.status(404).json({ error: `=>${error}` });
       }
    }
-  
+;
    async receive (req: Request, res: Response) {
-    const schema = Yup.object().shape({
-       email: Yup.string().required()
-    });
-    if (!(await schema.isValid(req.body))) {
-       return res.status(400).json('error validator!');
-    }
-  }
+      try {
+         const tokenRepository = getCustomRepository(TokenRepository);
+         const usuarioRepository = getCustomRepository(UsuarioRepository);
+
+         const loginRepository = getCustomRepository(LoginRepository);
+         const { token, id } = req.query;
+         const { novaSenha} = req.body;
+
+         const existeToken = await tokenRepository.findOne({ where: { token } });
+         if (!existeToken) {
+            return res.status(statusCode.naoEncontrado).json({ mensagem: 'Utoken inválido!' });
+         }
+
+         const existeUsuario = await usuarioRepository.findOne({ where: { id: existeToken.usuario } });
+         if (!existeUsuario) {
+            return res.status(statusCode.naoEncontrado).json({ mensagem: 'Usuario inválido!' });
+         }
+
+         const existeLogin = await loginRepository.findOne({ where: { usuarioId: existeUsuario } });
+         if (!existeLogin) {
+          return res.status(statusCode.naoEncontrado).json({ mensagem: 'Usuario inválido!' });
+       }
+       
+       const resetSenha= await loginRepository.update({id:existeLogin.id},{password:novaSenha})
+
+       return res.status(statusCode.ok).json({ mensagem: 'Senha Recuperada com suceso!' });
+    
+      } catch (err) {
+        console.log(err)
+        return res.status(statusCode.erroInterno).json({ mensagem: 'Usuario inválido!' });
+    
+      }
+   }
 }
 
 export default new RecuperarSenhaController();
