@@ -5,5 +5,5 @@ import LoginController from "./LoginController";
 import SessionController from "./SessionController";
 import RecuperarSenhaController from "./RecuperarSenhaController";
 import CursoController from "./CursoController";
-
-export {UsuarioController,CursoController,RecuperarSenhaController, SessionController,TipoDeContactoController,ContactoController,LoginController}
+import InscricaoController from './InscricaoController'
+export {UsuarioController,InscricaoController,CursoController,RecuperarSenhaController, SessionController,TipoDeContactoController,ContactoController,LoginController}

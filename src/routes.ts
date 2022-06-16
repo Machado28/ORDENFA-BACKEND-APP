@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import multer from 'multer';
-import { ContactoController, CursoController, LoginController, RecuperarSenhaController, SessionController, TipoDeContactoController, UsuarioController } from './app/controllers';
+import { ContactoController, CursoController, InscricaoController, LoginController, RecuperarSenhaController, SessionController, TipoDeContactoController, UsuarioController } from './app/controllers';
 import { multerconfig } from './config/multer';
 
 const routes = Router();
@@ -19,6 +19,12 @@ routes.post('/tipodecontacto', TipoDeContactoController.store);
 routes.get('/tipodecontacto', TipoDeContactoController.index);
 routes.put('/tipodecontacto/:id', TipoDeContactoController.update);
 routes.delete('/tipodecontacto/:id', TipoDeContactoController.delete);
+
+routes.post('/inscricao', InscricaoController.store);
+routes.get('/inscricao',InscricaoController.index);
+routes.put('/inscricao/:id',InscricaoController.update);
+routes.delete('/inscricao/:id', InscricaoController.delete);
+
 
 routes.get('/contactos',ContactoController.index);
 routes.post('/contacto',ContactoController.store);
