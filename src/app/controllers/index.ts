@@ -1,3 +1,3 @@
 import UsuarioController from "./UsuarioController";
-
-export {UsuarioController}
+import TipoDeContactoController from "./TipoDeContactoController";
+export {UsuarioController, TipoDeContactoController}
