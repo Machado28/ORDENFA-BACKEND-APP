@@ -12,6 +12,7 @@ const upload = multer(multerconfig);
 
 routes.post('/usuario', UsuarioController.store);
 routes.get('/usuarios', UsuarioController.index);
+routes.delete('/usuario/:id', UsuarioController.delete);
 
 routes.post('/tipodecontacto', TipoDeContactoController.store);
 routes.get('/tipodecontacto', TipoDeContactoController.index);
