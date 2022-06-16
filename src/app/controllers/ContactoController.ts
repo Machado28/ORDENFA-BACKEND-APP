@@ -3,6 +3,7 @@ import { getCustomRepository } from 'typeorm';
 import * as Yup from 'yup';
 import { ContactoRepository } from '../../repositories/ContactoRepository';
 import { TipoDeContactoRepository } from '../../repositories/TipoDeContactoRepository';
+import { UsuarioRepository } from '../../repositories/UsuarioRepository';
 import Resposta from '../util/message';
 import Res from '../util/message';
 import { statusCode } from '../util/statusCode';
@@ -12,6 +13,7 @@ class ContactoController {
       const schema = Yup.object().shape({
          descricao: Yup.string().required(),
          tipoId:Yup.string().required(),
+         usuarioId:Yup.string().required(),
          
 
       });
@@ -20,14 +22,16 @@ class ContactoController {
       }
 
       try {
-         const{ descricao,tipoId}=req.body
+         const{ descricao,tipoId,usuarioId}=await req.body
          
         
          const tipoDeContactoRepository = getCustomRepository(TipoDeContactoRepository);
          const contactoRepository = getCustomRepository(ContactoRepository);
-        
+         const usuarioRepository = getCustomRepository(UsuarioRepository);
+       
          const tipoDeContactoExist = await tipoDeContactoRepository.findOne( tipoId );
          const contactoExist = await contactoRepository.findOne({ descricao });
+         const usuarioExist = await usuarioRepository.findOne({where:{id:usuarioId} });
 
           if (contactoExist) {
             return res.status(statusCode.proibido).json({mensagem:'contacto já existe!'});
@@ -35,10 +39,14 @@ class ContactoController {
          if (!tipoDeContactoExist) {
             return res.status(statusCode.naoEncontrado).json({mensagem:'tipo de contacto não encontrado'});
          }
+         if (!usuarioExist) {
+            return res.status(statusCode.naoEncontrado).json({mensagem:'usuário não encontrado'});
+         }
  
          const contacto = contactoRepository.create({
             descricao,
-            tipo:tipoDeContactoExist
+            tipo:tipoDeContactoExist,
+            usuarioId:usuarioExist
          });
           
          await contactoRepository.save(contacto);
