@@ -10,7 +10,7 @@ routes.get('/', (req: Request, res: Response) => {
 
 const upload = multer(multerconfig);
 
-routes.post('/usuario',UsuarioController.store,ContactoController.store, );
+routes.post('/usuario',UsuarioController.store);
 routes.get('/usuarios', UsuarioController.index);
 routes.delete('/usuario/:id', UsuarioController.delete);
 routes.put('/usuario/:id', UsuarioController.update);
@@ -21,6 +21,6 @@ routes.put('/tipodecontacto/:id', TipoDeContactoController.update);
 routes.delete('/tipodecontacto/:id', TipoDeContactoController.delete);
 
 routes.get('/contactos',ContactoController.index);
-
+routes.post('/contacto',ContactoController.store);
 
 export default routes;
