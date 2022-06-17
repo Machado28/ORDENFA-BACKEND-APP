@@ -20,17 +20,19 @@ class FicheiroController {
          const tipoDeFicheiroRepository = getCustomRepository(TipoDeFicheiroRepository);
 
          const ficheiroRepository = getCustomRepository(FicheiroRepository);
-         const { TipoId } = req.params;
+         const { tipoId } = await  req.params;
          const { originalname: name, filename: path } = req.file;
-         const existTipoDeFicheiro = await tipoDeFicheiroRepository.findOne({ where: { id: TipoId } });
-
+         const existTipoDeFicheiro = await tipoDeFicheiroRepository.findOne({ where: { id: tipoId } });
+         console.log(tipoId)
          if (!existTipoDeFicheiro) {
+          console.log(existTipoDeFicheiro)
             return res.status(404).json({ message: 'Tipo Not Exists!' });
          }
 
          const Ficheiro = ficheiroRepository.create({
             nome: name,
             path,
+            url:path,
             tipo: existTipoDeFicheiro
          });
          await ficheiroRepository.save(Ficheiro);
