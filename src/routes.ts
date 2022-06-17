@@ -4,20 +4,17 @@ import { ContactoController, CursoController, EscolaController, InscricaoControl
 import TipoDeFicheiroController from './app/controllers/TipoDeFicheiroController';
 import { multerconfig } from './config/multer';
 import FicheiroController from './app/controllers/FicheiroController';
- 
+import express from 'express'
 const routes = Router();
 routes.get('/', (req: Request, res: Response) => {
   return res.status(400).json({ message: 'running well' });
 });
 
 const upload = multer(multerconfig);
-
-routes.post('/upload/:typeId', upload.single('file'), FicheiroController.store);
-routes.get('/uploads', FicheiroController.index);
-routes.get('/upload/:id', FicheiroController.getOne);
-routes.put('/upload/:id', FicheiroController.update);
+express().use('/files',express.static("uploads"))
+routes.post('/upload/:tipoId', upload.single('file'), FicheiroController.store);
 routes.delete('/upload/:id', FicheiroController.delete);
-
+express().use('/files',express.static("uploads"))
 routes.post('/usuario',UsuarioController.store);
 routes.get('/usuarios', UsuarioController.index);
 routes.delete('/usuario/:id', UsuarioController.delete);
