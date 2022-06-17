@@ -20,11 +20,9 @@ export const multerconfig = {
     },
   }),
 
-  limits: {
-    fileSize: (100 * 1024) ^ 2, // 5MB
-  },
+  
   fileFilter: (req, file, callback) => {
-    const formats = ['image/jpeg', 'image/jpg', 'image/png', 'pdf'];
+    const formats = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf',".pdf","PDF"];
 
     if (formats.includes(file.mimetype)) {
       callback(null, true);
