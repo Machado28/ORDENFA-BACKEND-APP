@@ -45,7 +45,7 @@ class SessionsController {
             return res.status(401).json({ error: 'Login ou senha inválido!' });
          }
 
-         const token = jwt.sign({ session: { usuarioId: login.usuarioId } }, authData.key, {
+         const token = jwt.sign({ session: { usuarioIdRecuperacao: login.usuarioId } }, authData.key, {
             expiresIn: authData.expiresIn
          });
 
