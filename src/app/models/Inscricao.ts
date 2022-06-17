@@ -8,7 +8,7 @@ import Usuario from './Usuario';
 class Inscricao{
   @PrimaryGeneratedColumn('uuid')
   id:string;
-  
+
   @ManyToOne(()=>Curso, curso=>curso,{eager:true})
   @JoinColumn({name:"cursoId"})
   cursoId:Curso

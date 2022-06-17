@@ -11,8 +11,7 @@ class InscricaoController {
    async store (req: Request, res: Response, next: NextFunction) {
       const schema = Yup.object().shape({
          cursoId: Yup.string().required(),
-         usuarioId: Yup.string().required(),
-
+         usuarioId: Yup.string().required()
       });
       if (!(await schema.isValid(req.body))) {
          return res.status(statusCode.erroExterno).json(Resposta(statusCode.erroExterno));
@@ -27,7 +26,7 @@ class InscricaoController {
 
          const cursoExist = await cursoRepository.findOne({ where: { id: cursoId } });
          const usuarioExist = await usuarioRepository.findOne({ where: { id: usuarioId } });
-        
+
          if (!cursoExist) {
             return res.status(statusCode.naoEncontrado).json({ mensagem: 'curso não encontrado' });
          }
@@ -35,26 +34,23 @@ class InscricaoController {
             return res.status(statusCode.naoEncontrado).json({ mensagem: 'usuário não encontrado' });
          }
 
-         const inscricaoExist = await inscricaoRepository.findOne({ where:{membroId:usuarioId} });
+         const inscricaoExist = await inscricaoRepository.findOne({ where: { membroId: usuarioId } });
 
-       
          if (inscricaoExist) {
             return res.status(statusCode.proibido).json({ mensagem: ' já inscrito!' });
          }
 
-       
-
          const inscricao = inscricaoRepository.create({
-            cursoId:cursoExist,
-           membroId: usuarioExist,
-           estado:false
+            cursoId: cursoExist,
+            membroId: usuarioExist,
+            estado: false
          });
 
          await inscricaoRepository.save(inscricao);
 
          return res.status(statusCode.criado).json(Resposta(statusCode.criado));
       } catch (err) {
-         console.log(err)
+         console.log(err);
          return res.status(statusCode.erroInterno).json(Resposta(statusCode.erroInterno));
       }
    }
@@ -84,7 +80,7 @@ class InscricaoController {
 
       try {
          const { id } = req.params;
-         const { cursoId, } = req.body;
+         const { cursoId } = req.body;
 
          const cursoRepository = getCustomRepository(CursoRepository);
          const inscricaoRepository = getCustomRepository(InscricaoRepository);
@@ -94,7 +90,7 @@ class InscricaoController {
          if (!cursoExist) {
             return res.status(statusCode.naoEncontrado).json(Resposta(statusCode.naoEncontrado));
          }
-         await inscricaoRepository.update({ id }, { cursoId:cursoExist});
+         await inscricaoRepository.update({ id }, { cursoId: cursoExist });
          return res.status(statusCode.ok).json(Resposta(statusCode.ok));
       } catch (err) {
          console.log(err);
@@ -105,7 +101,7 @@ class InscricaoController {
    async delete (req: Request, res: Response) {
       try {
          const { id } = req.params;
-         const inscricaoRepository=getCustomRepository(InscricaoRepository)
+         const inscricaoRepository = getCustomRepository(InscricaoRepository);
          const inscricaoExiste = await inscricaoRepository.findOne({ id });
 
          if (!inscricaoExiste) {
