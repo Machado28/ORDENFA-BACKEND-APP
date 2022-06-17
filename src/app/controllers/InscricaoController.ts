@@ -3,6 +3,7 @@ import { getCustomRepository } from 'typeorm';
 import * as Yup from 'yup';
 import { CursoRepository } from '../../repositories/CurssoRepository';
 import { EscolaRepository } from '../../repositories/EscolaRepository';
+import { FicheiroRepository } from '../../repositories/FicheiroRepository';
 import { InscricaoRepository } from '../../repositories/InscricaoRepository';
 import { UsuarioRepository } from '../../repositories/UsuarioRepository';
 import Resposta from '../util/message';
@@ -20,21 +21,28 @@ class InscricaoController {
       }
 
       try {
-         const { cursoId, usuarioId, escolaIds } = await req.body;
+         const { cursoId, usuarioId, escolaIds, ficheiroId } = await req.body;
 
          const cursoRepository = getCustomRepository(CursoRepository);
          const inscricaoRepository = getCustomRepository(InscricaoRepository);
          const usuarioRepository = getCustomRepository(UsuarioRepository);
          const escolaRepository = getCustomRepository(EscolaRepository);
+         const ficheiroRepository = getCustomRepository(FicheiroRepository);
 
          const cursoExist = await cursoRepository.findOne({ where: { id: cursoId } });
          const usuarioExist = await usuarioRepository.findOne({ where: { id: usuarioId } });
-        
+         const ficheiroExist = await ficheiroRepository.findByIds(ficheiroId);
          const escolaExiste = await escolaRepository.findByIds(escolaIds);
+         
 
          if (!cursoExist) {
             return res.status(statusCode.naoEncontrado).json({ mensagem: 'curso não encontrado' });
          }
+
+         if (!ficheiroExist) {
+            return res.status(statusCode.naoEncontrado).json({ mensagem: 'ficheiro não encontrado' });
+         }
+
          if (!usuarioExist) {
             return res.status(statusCode.naoEncontrado).json({ mensagem: 'usuário não encontrado' });
          }
@@ -49,6 +57,7 @@ class InscricaoController {
             cursoId: cursoExist,
             membroId: usuarioExist,
             escolaId:escolaExiste,
+            ficheiroId:ficheiroExist,
             estado: false
          });
 
