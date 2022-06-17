@@ -11,7 +11,7 @@ routes.get('/', (req: Request, res: Response) => {
 });
 
 const upload = multer(multerconfig);
-express().use('/files',express.static("uploads"))
+ 
 routes.post('/upload/:tipoId', upload.single('file'), FicheiroController.store);
 routes.delete('/upload/:id', FicheiroController.delete);
 express().use('/files',express.static("uploads"))
