@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { getCustomRepository } from 'typeorm';
 import * as Yup from 'yup';
 import { CursoRepository } from '../../repositories/CurssoRepository';
+import { EscolaRepository } from '../../repositories/EscolaRepository';
 import { InscricaoRepository } from '../../repositories/InscricaoRepository';
 import { UsuarioRepository } from '../../repositories/UsuarioRepository';
 import Resposta from '../util/message';
@@ -11,21 +12,25 @@ class InscricaoController {
    async store (req: Request, res: Response, next: NextFunction) {
       const schema = Yup.object().shape({
          cursoId: Yup.string().required(),
-         usuarioId: Yup.string().required()
+         usuarioId: Yup.string().required(),
+         escolaId:Yup.array().required()
       });
       if (!(await schema.isValid(req.body))) {
          return res.status(statusCode.erroExterno).json(Resposta(statusCode.erroExterno));
       }
 
       try {
-         const { cursoId, usuarioId } = await req.body;
+         const { cursoId, usuarioId, escolaIds } = await req.body;
 
          const cursoRepository = getCustomRepository(CursoRepository);
          const inscricaoRepository = getCustomRepository(InscricaoRepository);
          const usuarioRepository = getCustomRepository(UsuarioRepository);
+         const escolaRepository = getCustomRepository(EscolaRepository);
 
          const cursoExist = await cursoRepository.findOne({ where: { id: cursoId } });
          const usuarioExist = await usuarioRepository.findOne({ where: { id: usuarioId } });
+        
+         const escolaExiste = await escolaRepository.find(escolaIds);
 
          if (!cursoExist) {
             return res.status(statusCode.naoEncontrado).json({ mensagem: 'curso não encontrado' });
@@ -43,6 +48,7 @@ class InscricaoController {
          const inscricao = inscricaoRepository.create({
             cursoId: cursoExist,
             membroId: usuarioExist,
+            escolaId:escolaExiste,
             estado: false
          });
 

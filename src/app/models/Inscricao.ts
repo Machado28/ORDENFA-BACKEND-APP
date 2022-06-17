@@ -1,6 +1,7 @@
 import 'reflect-metadata';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
 import Curso from './Curso';
+import Escola from './Escola';
 import { TabelaDefault } from './shared';
 import Usuario from './Usuario';
 
@@ -16,6 +17,11 @@ class Inscricao{
   @ManyToOne(()=>Usuario, usuario=>usuario,{eager:true})
   @JoinColumn({name:"membroId"})
   membroId:Usuario
+
+  @ManyToMany(()=>Escola, escola=>escola,{eager:true})
+  @JoinTable({inverseJoinColumn:{name:"inscricao"},
+  joinColumn:{'name':'escolaId'}})
+  escolaId:Escola[]
 
   @Column()
   estado:boolean
