@@ -7,8 +7,12 @@ import RecuperarSenhaController from './RecuperarSenhaController';
 import CursoController from './CursoController';
 import InscricaoController from './InscricaoController';
 import EscolaController from './EscolaController';
+import TipoDeFicheroController from './TipoDeFicheiroController'
+import  FicheroController from './FicheiroController'
 export {
    UsuarioController,
+   TipoDeFicheroController,
+  FicheroController,
    InscricaoController,
    CursoController,
    RecuperarSenhaController,
