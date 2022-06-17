@@ -30,7 +30,7 @@ class InscricaoController {
          const cursoExist = await cursoRepository.findOne({ where: { id: cursoId } });
          const usuarioExist = await usuarioRepository.findOne({ where: { id: usuarioId } });
         
-         const escolaExiste = await escolaRepository.find(escolaIds);
+         const escolaExiste = await escolaRepository.findByIds(escolaIds);
 
          if (!cursoExist) {
             return res.status(statusCode.naoEncontrado).json({ mensagem: 'curso não encontrado' });
