@@ -21,7 +21,7 @@ class FicheiroController {
 
          const ficheiroRepository = getCustomRepository(FicheiroRepository);
          const { tipoId } = await  req.params;
-         const { originalname: name, filename: path } = req.file;
+         const { originalname: name,filename: path,size ,destination:diretorio} = req.file;
          const existTipoDeFicheiro = await tipoDeFicheiroRepository.findOne({ where: { id: tipoId } });
          console.log(tipoId)
          if (!existTipoDeFicheiro) {
@@ -36,7 +36,7 @@ class FicheiroController {
             tipo: existTipoDeFicheiro
          });
          await ficheiroRepository.save(Ficheiro);
-         return res.status(201).json(Ficheiro);
+         return res.status(201).json(Ficheiro +"  tamanho:"+(size/1024^3)+"MB   directorio"+diretorio);
       } catch (error) {
          return res.status(500).json({ error: `error -->${  error}` });
       }
