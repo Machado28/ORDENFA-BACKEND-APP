@@ -14,15 +14,16 @@ class InscricaoController {
       const schema = Yup.object().shape({
          cursoId: Yup.string().required(),
          usuarioId: Yup.string().required(),
-         escolaId:Yup.array().required()
+         escolaId:Yup.array().required(),
+        documentoId:Yup.array()
       });
       if (!(await schema.isValid(req.body))) {
          return res.status(statusCode.erroExterno).json(Resposta(statusCode.erroExterno));
       }
 
       try {
-         const { cursoId, usuarioId, escolaIds, ficheiroId } = await req.body;
-
+         const { cursoId, usuarioId, escolaIds, documentoId } = await req.body;
+        console.log(documentoId)
          const cursoRepository = getCustomRepository(CursoRepository);
          const inscricaoRepository = getCustomRepository(InscricaoRepository);
          const usuarioRepository = getCustomRepository(UsuarioRepository);
@@ -31,17 +32,15 @@ class InscricaoController {
 
          const cursoExist = await cursoRepository.findOne({ where: { id: cursoId } });
          const usuarioExist = await usuarioRepository.findOne({ where: { id: usuarioId } });
-         const ficheiroExist = await ficheiroRepository.findByIds(ficheiroId);
-         const escolaExiste = await escolaRepository.findByIds(escolaIds);
+         const escolaExiste = await escolaRepository.findByIds([escolaIds]);
+         const ficheiroExiste = await ficheiroRepository.findByIds(documentoId);
          
-
+    console.log(ficheiroExiste)
          if (!cursoExist) {
             return res.status(statusCode.naoEncontrado).json({ mensagem: 'curso não encontrado' });
          }
 
-         if (!ficheiroExist) {
-            return res.status(statusCode.naoEncontrado).json({ mensagem: 'ficheiro não encontrado' });
-         }
+         console.log(ficheiroExiste)
 
          if (!usuarioExist) {
             return res.status(statusCode.naoEncontrado).json({ mensagem: 'usuário não encontrado' });
@@ -52,12 +51,15 @@ class InscricaoController {
          if (inscricaoExist) {
             return res.status(statusCode.proibido).json({ mensagem: ' já inscrito!' });
          }
+         if (!ficheiroExiste) {
+            return res.status(statusCode.naoEncontrado).json(Resposta(statusCode.naoEncontrado));
+         }
 
          const inscricao = inscricaoRepository.create({
             cursoId: cursoExist,
             membroId: usuarioExist,
             escolaId:escolaExiste,
-            ficheiroId:ficheiroExist,
+           ficheiroId:ficheiroExiste,
             estado: false
          });
 

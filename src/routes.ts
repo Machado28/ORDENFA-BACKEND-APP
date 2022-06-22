@@ -12,6 +12,10 @@ routes.get('/', (req: Request, res: Response) => {
 
 const upload = multer(multerconfig);
  
+routes.post('/upload/',  FicheiroController.getOne);
+routes.get('/upload/:inscricaoId',  FicheiroController.index);
+routes.get('/upload/:inscricaoId/:id',  FicheiroController.getOne);
+routes.get('/upload',  FicheiroController.getAll);
 routes.post('/upload/:tipoId', upload.single('file'), FicheiroController.store);
 routes.delete('/upload/:id', FicheiroController.delete);
 express().use('/files',express.static("uploads"))

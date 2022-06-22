@@ -5,6 +5,7 @@ import { FicheiroRepository } from '../../repositories/FicheiroRepository';
 import { TipoDeFicheiroRepository } from '../../repositories/TipoDeFicheiroRepository';
 import Resposta from '../util/message';
 import { statusCode } from '../util/statusCode';
+import { InscricaoRepository } from '../../repositories/InscricaoRepository';
 
 class FicheiroController {
    async store (req: Request, res: Response) {
@@ -20,49 +21,68 @@ class FicheiroController {
          const tipoDeFicheiroRepository = getCustomRepository(TipoDeFicheiroRepository);
 
          const ficheiroRepository = getCustomRepository(FicheiroRepository);
-         const { tipoId } = await  req.params;
-         const { originalname: name,filename: path,size ,destination:diretorio} = req.file;
+         const { tipoId } = await req.params;
+         const { originalname: name, filename: path, size, destination: diretorio } = req.file;
          const existTipoDeFicheiro = await tipoDeFicheiroRepository.findOne({ where: { id: tipoId } });
-         console.log(tipoId)
+         console.log(tipoId);
          if (!existTipoDeFicheiro) {
-          console.log(existTipoDeFicheiro)
+            console.log(existTipoDeFicheiro);
             return res.status(404).json({ message: 'Tipo Not Exists!' });
          }
 
          const Ficheiro = ficheiroRepository.create({
             nome: name,
             path,
-            url:path,
+            url: "https//localhost:"+process.env.PORT+":/files/"+path,
             tipo: existTipoDeFicheiro
          });
          await ficheiroRepository.save(Ficheiro);
-         return res.status(201).json(Ficheiro +"  tamanho:"+(size/1024^3)+"MB   directorio"+diretorio);
+         return res.status(201).json(`${Ficheiro}  tamanho:${(size / 1024) ^ 3}MB   directorio${diretorio}`);
       } catch (error) {
-         return res.status(500).json({ error: `error -->${  error}` });
+         return res.status(500).json({ error: `error -->${error}` });
       }
    }
 
-   async index (req: Request, res: Response) {
+   async getOne(req: Request, res: Response) {
       try {
-         const ficheiroRepository = getCustomRepository(FicheiroRepository);
-         const Ficheiro = await ficheiroRepository.find();
-         return res.status(200).json(Ficheiro);
+         const { inscricaoId,id} = req.params;
+         const inscricaoRepository = getCustomRepository(InscricaoRepository);
+         const existInscricao = await inscricaoRepository.findOne({ where: {id: inscricaoId } });
+         if (!existInscricao) {
+            return res.status(statusCode.naoEncontrado).json(Resposta(statusCode.naoEncontrado));
+         }
+         const documento = existInscricao.ficheiroId.filter(file => file.id===id);
+         return res.status(200).json(documento);
       } catch (error) {
          return res.status(500).json({ error: 'error' });
       }
    }
 
-   async getOne (req: Request, res: Response) {
+   async index (req: Request, res: Response) {
       try {
-         const { id } = req.params;
-         const ficheiroRepository = getCustomRepository(FicheiroRepository);
-         const existFicheiro = await ficheiroRepository.findOne({ where: { id } });
-       if(!existFicheiro){
-        return res.status(statusCode.naoEncontrado).json(Resposta(statusCode.naoEncontrado));
-       }
+         const { inscricaoId } = req.params;
+         const inscricaoRepository = getCustomRepository(InscricaoRepository);
+         const existInscricao = await inscricaoRepository.findOne({ where: {id: inscricaoId } });
+         if (!existInscricao) {
+            return res.status(statusCode.naoEncontrado).json(Resposta(statusCode.naoEncontrado));
+         }
+         const documentos = existInscricao.ficheiroId.filter(file => file);
+         return res.status(200).json(documentos);
+      } catch (error) {
+         return res.status(500).json({ error: 'error' });
+      }
+   }
 
-         const result = existFicheiro;
-         return res.status(200).json(result);
+   async getAll (req: Request, res: Response) {
+      try {
+         
+         const ficheiroRepository = getCustomRepository(FicheiroRepository);
+         const existficheiro = await ficheiroRepository.find();
+         if (!existficheiro) {
+            return res.status(statusCode.naoEncontrado).json(Resposta(statusCode.naoEncontrado));
+         }
+         const documentos=existficheiro
+         return res.status(200).json(documentos);
       } catch (error) {
          return res.status(500).json({ error: 'error' });
       }
